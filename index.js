@@ -32,13 +32,17 @@ app.post('/event', (req, res) => {
   const body = req.body;
   switch (body.type) {
     case 'url_verification':
+      console.log('Verifying event request URL...');
       if (body.challenge) {
+        console.log('Challenge accepted!');
         res.send(body.challenge);
       } else {
+        console.log('No challenge token');
         res.sendStatus(400).send('No challenge token');
       }
       break;
     case 'app_mention':
+      console.log('Handling app mention...');
       const { channel, user } = body;
       const answer = answers[Math.floor(Math.random() * answers.length)];
       request({
@@ -63,6 +67,7 @@ app.post('/event', (req, res) => {
         });
       break;
     default:
+      console.log('OK: Fallback response');
       res.send('OK');
   }
 });
