@@ -5,6 +5,12 @@ const request = require('request-promise');
 const app = express();
 app.use(bodyParser.json());
 
+const colors = {
+  affirmative: '#2ea24e',
+  'non-committal': '#db9c30',
+  negative: '#d50200',
+};
+
 const answers = [
   { type: 'affirmative', text: 'It is certain' },
   { type: 'affirmative', text: 'As I see it, yes' },
@@ -57,7 +63,11 @@ app.post('/event', (req, res) => {
             },
             body: {
               channel,
-              text: `<@${user}> ${answer}`
+              attachments: [{
+                color: colors[answer.type],
+                pretext: `<@${user}>`,
+                text: answer.text,
+              }]
             },
             json: true
           })
