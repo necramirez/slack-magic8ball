@@ -44,6 +44,9 @@ app.post('/event', (req, res) => {
       request({
         method: 'POST',
         uri: 'https://slack.com/api/chat.postMessage',
+        headers: {
+          Authorization: process.env.SLACK_BOT_TOKEN ? `Bearer ${process.env.SLACK_BOT_TOKEN}` : undefined,
+        },
         body: {
           channel,
           text: `<@${user}> ${answer}`
