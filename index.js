@@ -54,9 +54,11 @@ app.post('/event', (req, res) => {
         json: true
       })
         .then(() => {
+          console.log(`Successfully posted Slack message ${JSON.stringify(answer)}`);
           res.send(answer);
         })
         .catch(() => {
+          console.log(`Failed to post Slack message ${JSON.stringify(answer)}`);
           res.sendStatus(400).send('Failed to post Slack message');
         });
       break;
