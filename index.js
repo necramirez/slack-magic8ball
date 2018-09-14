@@ -41,33 +41,42 @@ app.post('/event', (req, res) => {
         res.sendStatus(400).send('No challenge token');
       }
       break;
-    case 'app_mention':
-      console.log('Handling app mention...');
-      const { channel, user } = body;
-      const answer = answers[Math.floor(Math.random() * answers.length)];
-      request({
-        method: 'POST',
-        uri: 'https://slack.com/api/chat.postMessage',
-        headers: {
-          Authorization: process.env.SLACK_BOT_TOKEN ? `Bearer ${process.env.SLACK_BOT_TOKEN}` : undefined,
-        },
-        body: {
-          channel,
-          text: `<@${user}> ${answer}`
-        },
-        json: true
-      })
-        .then(() => {
-          console.log(`Successfully posted Slack message ${JSON.stringify(answer)}`);
-          res.send(answer);
-        })
-        .catch(() => {
-          console.log(`Failed to post Slack message ${JSON.stringify(answer)}`);
-          res.sendStatus(400).send('Failed to post Slack message');
-        });
+    case 'event_callback':
+      console.log('Handling event callback...');
+      const { event } = body;
+      switch (event.type) {
+        case 'app_mention':
+          console.log('Handling app mention...');
+          const { channel, user } = event;
+          const answer = answers[Math.floor(Math.random() * answers.length)];
+          request({
+            method: 'POST',
+            uri: 'https://slack.com/api/chat.postMessage',
+            headers: {
+              Authorization: process.env.SLACK_BOT_TOKEN ? `Bearer ${process.env.SLACK_BOT_TOKEN}` : undefined,
+            },
+            body: {
+              channel,
+              text: `<@${user}> ${answer}`
+            },
+            json: true
+          })
+            .then(() => {
+              console.log(`Successfully posted Slack message ${JSON.stringify(answer)}`);
+              res.send(answer);
+            })
+            .catch(() => {
+              console.log(`Failed to post Slack message ${JSON.stringify(answer)}`);
+              res.sendStatus(400).send('Failed to post Slack message');
+            });
+          break;
+        default:
+          console.log('OK: Unknown event type');
+          res.send('OK');
+      }
       break;
     default:
-      console.log('OK: Fallback response');
+      console.log('OK: Unknown callback type');
       res.send('OK');
   }
 });
